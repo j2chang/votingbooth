@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidates</title>
+</head>
+<body>
+    <h1>Candidates</h1>
+    <ul id="candidate-list"></ul>
+
+    <script>
+        async function loadCandidates() {
+            const response = await fetch('/api/candidates');
+            const candidates = await response.json();
+            
+            const candidateList = document.getElementById('candidate-list');
+            candidateList.innerHTML = '';
+
+            candidates.forEach(candidate => {
+                const li = document.createElement('li');
+                li.textContent = candidate.name;
+                candidateList.appendChild(li);
+            });
+        }
+
+        loadCandidates();
+    </script>
+</body>
+</html>

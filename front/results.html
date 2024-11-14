@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+</head>
+<body>
+    <h1>Results</h1>
+    <h2>Candidate Vote Counts</h2>
+    <ul id="results-list"></ul>
+
+    <h3>Pending Ballots</h3>
+    <p id="pending-count"></p>
+
+    <script>
+        async function loadResults() {
+            const response = await fetch('/api/results');
+            const data = await response.json();
+            
+            const resultsList = document.getElementById('results-list');
+            resultsList.innerHTML = '';
+
+            data.results.forEach(result => {
+                const li = document.createElement('li');
+                li.textContent = `${result.name}: ${result.ballots} votes`;
+                resultsList.appendChild(li);
+            });
+
+            document.getElementById('pending-count').textContent = `Pending Ballots: ${data.pending}`;
+        }
+
+        loadResults();
+    </script>
+</body>
+</html>

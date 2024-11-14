@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cast Vote</title>
+</head>
+<body>
+    <h1>Cast Your Vote</h1>
+    <ul id="candidate-options"></ul>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const voterId = urlParams.get('voterId');
+
+        async function loadCandidates() {
+            const response = await fetch('/api/candidates');
+            const candidates = await response.json();
+
+            const candidateOptions = document.getElementById('candidate-options');
+            candidateOptions.innerHTML = '';
+
+            candidates.forEach(candidate => {
+                const li = document.createElement('li');
+                li.textContent = candidate.name;
+                li.onclick = () => castVote(candidate._id);
+                candidateOptions.appendChild(li);
+            });
+        }
+
+        async function castVote(candidateId) {
+            await fetch(`/api/voters/${voterId}/ballot`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ candidateId })
+            });
+
+            window.location.href = '/voting/voters.html';
+        }
+
+        loadCandidates();
+    </script>
+</body>
+</html>

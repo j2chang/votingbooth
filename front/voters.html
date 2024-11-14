@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voters</title>
+</head>
+<body>
+    <h1>Voters</h1>
+
+    <h2>Registered Voters (Not Voted)</h2>
+    <ul id="registered-voters"></ul>
+
+    <h2>Voters Who Have Voted</h2>
+    <ul id="voted-voters"></ul>
+
+    <h3>Add New Voter</h3>
+    <input type="text" id="new-voter-name" placeholder="Enter voter name">
+    <button onclick="addVoter()">Add Voter</button>
+
+    <script>
+        // Fetch and display registered and voted voters
+        async function loadVoters() {
+            const response = await fetch('/api/voters');
+            const data = await response.json();
+
+            const registeredList = document.getElementById('registered-voters');
+            const votedList = document.getElementById('voted-voters');
+
+            registeredList.innerHTML = '';
+            votedList.innerHTML = '';
+
+            data.registered.forEach(voter => {
+                const li = document.createElement('li');
+                li.textContent = voter.name;
+                li.onclick = () => selectVoter(voter._id);
+                registeredList.appendChild(li);
+            });
+
+            data.voted.forEach(voter => {
+                const li = document.createElement('li');
+                li.textContent = voter.name;
+                votedList.appendChild(li);
+            });
+        }
+
+        // Add a new voter
+        async function addVoter() {
+            const name = document.getElementById('new-voter-name').value;
+            if (!name) return;
+
+            await fetch('/api/voters', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+
+            document.getElementById('new-voter-name').value = '';
+            loadVoters();
+        }
+
+        // Select voter to vote
+        function selectVoter(voterId) {
+            window.location.href = `/voting/cast_vote.html?voterId=${voterId}`;
+        }
+
+        // Load voters on page load
+        loadVoters();
+    </script>
+</body>
+</html>
